@@ -1,0 +1,47 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dynamo-register-v1-elb
+  namespace: dev
+spec:
+  type: LoadBalancer
+  selector:
+    app: dynamo-register
+    version: v1
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: dynamo-register-v1
+  namespace: dev
+spec:
+  type: NodePort
+  selector:
+    app: dynamo-register
+    version: v1
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: dynamo-register-v2
+  namespace: dev
+spec:
+  type: NodePort
+  selector:
+    app: dynamo-register
+    version: v2
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000

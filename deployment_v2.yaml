@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-women-demo-v2
+  labels:
+    app: dynamo-register
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dynamo-register
+      version: v2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: dynamo-register
+        version: v2
+    spec:
+#      serviceAccountName: service-dynamo
+      containers:
+      - image: "692137641826.dkr.ecr.us-east-1.amazonaws.com/apidemo:v2"
+        imagePullPolicy: Always
+        name: dynamo-register
+        env:
+          - name: DYNAMODB
+            value: "mytable"
+          - name: REGION
+            value: "us-east-1"
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /v2/healthcheck
+            port: 3000
+            # httpHeaders:
+            # - name: Custom-Header
+            #   value: Awesome
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /v2/healthcheck
+            port: 3000
+            # httpHeaders:
+            # - name: Custom-Header
+            #   value: Awesome
+          initialDelaySeconds: 10
+          periodSeconds: 15
